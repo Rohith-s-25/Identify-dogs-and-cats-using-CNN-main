@@ -1,0 +1,2 @@
+#Save the model
+model.save("model1_catsVSdogs_10epoch.h5")

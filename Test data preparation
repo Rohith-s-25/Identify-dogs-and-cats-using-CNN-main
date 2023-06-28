@@ -1,0 +1,30 @@
+test_filenames = os.listdir("./dogs-vs-cats/test1")
+test_df = pd.DataFrame({
+    'filename': test_filenames
+})
+nb_samples = test_df.shape[0]
+
+#categorical prediction
+predict = model.predict_generator(test_generator, steps=np.ceil(nb_samples/batch_size))
+
+#Convert labels to categories
+test_df['category'] = np.argmax(predict, axis=-1)
+
+label_map = dict((v,k) for k,v in train_generator.class_indices.items())
+test_df['category'] = test_df['category'].replace(label_map)
+
+test_df['category'] = test_df['category'].replace({ 'dog': 1, 'cat': 0 })
+
+#Visualize the prediction results
+sample_test = test_df.head(18)
+sample_test.head()
+plt.figure(figsize=(12, 24))
+for index, row in sample_test.iterrows():
+    filename = row['filename']
+    category = row['category']
+    img = load_img("./dogs-vs-cats/test1/"+filename, target_size=Image_Size)
+    plt.subplot(6, 3, index+1)
+    plt.imshow(img)
+    plt.xlabel(filename + '(' + "{}".format(category) + ')' )
+plt.tight_layout()
+plt.show()
